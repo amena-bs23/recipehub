@@ -1,19 +1,13 @@
-interface class LoginEntity {}
+class RecipeRequestEntity {
+  RecipeRequestEntity({required this.name, required this.link, this.time = 0});
 
-class LoginRequestEntity extends LoginEntity {
-  LoginRequestEntity({
-    required this.username,
-    required this.password,
-    this.shouldRemeber = false,
-  });
-
-  final String username;
-  final String password;
-  final bool? shouldRemeber;
+  final String name;
+  final String link;
+  final int? time;
 }
 
-class LoginResponseEntity extends LoginEntity {
-  LoginResponseEntity({required this.accessToken});
+class RecipeResponseEntity {
+  RecipeResponseEntity({required this.title});
 
-  final String accessToken;
+  final String title;
 }

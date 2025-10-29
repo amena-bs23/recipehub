@@ -7,7 +7,7 @@ class RecipeListSection extends StatelessWidget {
   Widget build(BuildContext context) {
     // mock recipes
     final recipes = List.generate(
-      10,
+      20,
       (i) => {
         'title': 'Recipe $i',
         'time': '${15 + i} min',
