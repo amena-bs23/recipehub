@@ -1,50 +1,136 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class FavoriteNotifier extends Notifier<Set<Recipe>> {
-  @override
-  Set<Recipe> build() {
-    return {};
-  }
+import '../../../../core/base/result.dart';
+import '../../../../core/di/dependency_injection.dart';
+import '../../../../domain/entities/recipe_entity.dart';
+import '../../../../domain/use_cases/recipe_use_case.dart';
 
-  void addFavorite(Recipe recipe) {
-    if (!state.contains(recipe)) {
-      state = {...state, recipe};
-    }
-  }
+class FavoritesState {
+  final List<Recipe> favorites;
+  final bool isLoading;
+  final bool isRefreshing;
+  final String? error;
 
-  void removeFavorite(Recipe recipe) {
-    if (state.contains(recipe)) {
-      state = state.where((p) => p.id != recipe.id).toSet();
-      // state = {...state}..remove(recipe); // IF a entire recipe object is passing to this method instead of sending recipe.id
-    }
-  }
+  const FavoritesState({
+    this.favorites = const [],
+    this.isLoading = false,
+    this.isRefreshing = false,
+    this.error,
+  });
 
-  void clearFavorites() {
-    state = {};
+  FavoritesState copyWith({
+    List<Recipe>? favorites,
+    bool? isLoading,
+    bool? isRefreshing,
+    String? error,
+  }) {
+    return FavoritesState(
+      favorites: favorites ?? this.favorites,
+      isLoading: isLoading ?? this.isLoading,
+      isRefreshing: isRefreshing ?? this.isRefreshing,
+      error: error ?? this.error,
+    );
   }
 }
 
-// final favoriteNotifierProvider =
-//     NotifierProvider<FavoriteNotifier, Set<Recipe>>(() {
-//       return FavoriteNotifier();
-//     });
+class FavoritesNotifier extends StateNotifier<FavoritesState> {
+  FavoritesNotifier(
+    this._getRecipesUseCase,
+    this._toggleFavoriteUseCase,
+  ) : super(const FavoritesState()) {
+    loadFavorites();
+  }
 
-final favoriteNotifierProvider =
-    NotifierProvider<FavoriteNotifier, Set<Recipe>>(() => FavoriteNotifier());
+  final GetRecipesUseCase _getRecipesUseCase;
+  final ToggleFavoriteUseCase _toggleFavoriteUseCase;
 
-// NotifierProvider is how you register your Notifier with Riverpod’s dependency system.
-// It’s what makes your FavoriteNotifier available throughout your app.
+  Future<void> loadFavorites({bool refresh = false}) async {
+    state = state.copyWith(
+      isLoading: !refresh,
+      isRefreshing: refresh,
+      error: null,
+    );
 
-// Its generic syntax is:
-//
-// NotifierProvider<NotifierType, StateType>(
-// () => NotifierInstance,
-// );
+    // Load all recipes and filter favorites
+    final result = await _getRecipesUseCase.call(limit: 100);
 
-class Recipe {
-  Recipe({this.id, this.name, this.image});
+    state = switch (result) {
+      Success(:final data) => () {
+          final favorites = data.where((r) => r.isFavorite).toList();
+          return state.copyWith(
+            favorites: favorites,
+            isLoading: false,
+            isRefreshing: false,
+            error: null,
+          );
+        }(),
+      Error(:final error) => state.copyWith(
+          isLoading: false,
+          isRefreshing: false,
+          error: error.message,
+        ),
+      _ => state.copyWith(
+          isLoading: false,
+          isRefreshing: false,
+          error: 'Something went wrong',
+        ),
+    };
+  }
 
-  final int? id;
-  final String? name;
-  final String? image;
+  Future<void> toggleFavorite(Recipe recipe) async {
+    final result = await _toggleFavoriteUseCase.call(recipe.id);
+
+    state = switch (result) {
+      Success() => () {
+          if (recipe.isFavorite) {
+            // Remove from favorites
+            return state.copyWith(
+              favorites: state.favorites
+                  .where((r) => r.id != recipe.id)
+                  .toList(),
+            );
+          } else {
+            // Add to favorites
+            return state.copyWith(
+              favorites: [...state.favorites, recipe.copyWith(isFavorite: true)],
+            );
+          }
+        }(),
+      Error(:final error) => state.copyWith(error: error.message),
+      _ => state.copyWith(error: 'Something went wrong'),
+    };
+  }
+
+  List<Recipe> filterFavorites(String query, String? difficulty) {
+    var filtered = state.favorites;
+
+    if (query.isNotEmpty) {
+      filtered = filtered
+          .where(
+            (r) =>
+                r.title.toLowerCase().contains(query.toLowerCase()) ||
+                r.description.toLowerCase().contains(query.toLowerCase()),
+          )
+          .toList();
+    }
+
+    if (difficulty != null && difficulty.isNotEmpty && difficulty != 'All') {
+      filtered = filtered.where((r) {
+        return r.difficulty.name.toLowerCase() == difficulty.toLowerCase();
+      }).toList();
+    }
+
+    return filtered;
+  }
+
+  void clearError() {
+    state = state.copyWith(error: null);
+  }
 }
+
+final favoritesNotifierProvider =
+    StateNotifierProvider<FavoritesNotifier, FavoritesState>((ref) {
+  final getRecipesUseCase = ref.read(getRecipesUseCaseProvider);
+  final toggleFavoriteUseCase = ref.read(toggleFavoriteUseCaseProvider);
+  return FavoritesNotifier(getRecipesUseCase, toggleFavoriteUseCase);
+});

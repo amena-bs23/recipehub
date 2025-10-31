@@ -1,19 +1,19 @@
 part of '../dependency_injection.dart';
 
 @Riverpod(keepAlive: true)
-AuthenticationRepository authenticationRepository(Ref ref) {
+Future<AuthenticationRepository> authenticationRepository(Ref ref) async {
+  final cacheService = await ref.watch(cacheServiceProvider.future);
   return AuthenticationRepositoryImpl(
     remote: ref.read(restClientServiceProvider),
-    local: ref.read(cacheServiceProvider),
+    local: cacheService,
   );
 }
 
 @Riverpod(keepAlive: true)
-RecipeRepository recipeRepository(Ref ref) {
+Future<RecipeRepository> recipeRepository(Ref ref) async {
+  final cacheService = await ref.watch(cacheServiceProvider.future);
   return RecipeRepositoryImpl(
-    remote: ref.read(
-      restClientServiceProvider,
-    ), // Use restClientServiceProvider
-    local: ref.read(cacheServiceProvider), // Use cacheServiceProvider
+    remote: ref.read(restClientServiceProvider),
+    local: cacheService,
   );
 }
