@@ -38,10 +38,7 @@ class RecipeListPage extends ConsumerWidget {
                 child: RecipeSearchBar(searchType: SearchType.recipes),
               ),
               const SizedBox(height: 16),
-              RecipeListSection(
-                query: searchState.query,
-                difficulty: searchState.difficulty,
-              ),
+              const RecipeListSection(),
             ],
           ),
         ),
