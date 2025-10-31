@@ -1,70 +1,64 @@
+import '../../core/base/failure.dart';
 import '../../core/base/result.dart';
-import '../entities/login_entity.dart';
-import '../entities/sign_up_entity.dart';
-import '../repositories/authentication_repository.dart';
+import '../entities/recipe_entity.dart';
+import '../repositories/recipe_repository.dart';
 
-final class RegisterUseCase {
-  RegisterUseCase(this.repository);
+final class GetRecipesUseCase {
+  GetRecipesUseCase(this.repository);
 
-  final AuthenticationRepository repository;
+  final RecipeRepository repository;
 
-  Future<SignUpResponseEntity> call(SignUpRequestEntity request) async {
-    return repository.register(request);
-  }
-}
-
-final class LoginUseCase {
-  LoginUseCase(this.repository);
-
-  final AuthenticationRepository repository;
-
-  Future<Result<LoginResponseEntity, String>> call({
-    required String email,
-    required String password,
-    bool? shouldRemember,
+  Future<Result<List<Recipe>, Failure>> call({
+    int skip = 0,
+    int limit = 30,
+    String? query,
+    String? difficulty,
   }) async {
-    final request = LoginRequestEntity(
-      username: email,
-      password: password,
-      shouldRemeber: shouldRemember,
+    return repository.getRecipes(
+      skip: skip,
+      limit: limit,
+      query: query,
+      difficulty: difficulty,
     );
-
-    final result = await repository.login(request);
-
-    return switch (result) {
-      Success(:final data) => Success(data),
-      Error(:final error) => Error(error.message),
-      _ => const Error('Something went wrong'),
-    };
   }
 }
 
-final class CheckRememberMeUseCase {
-  CheckRememberMeUseCase(this.repository);
+final class GetRecipeByIdUseCase {
+  GetRecipeByIdUseCase(this.repository);
 
-  final AuthenticationRepository repository;
+  final RecipeRepository repository;
 
-  Future<bool> call() async {
-    return repository.rememberMe();
+  Future<Result<Recipe, Failure>> call(String id) async {
+    return repository.getRecipeById(id);
   }
 }
 
-final class SaveRememberMeUseCase {
-  SaveRememberMeUseCase(this.repository);
+final class SearchRecipesUseCase {
+  SearchRecipesUseCase(this.repository);
 
-  final AuthenticationRepository repository;
+  final RecipeRepository repository;
 
-  Future<bool> call(bool rememberMe) async {
-    return repository.rememberMe(rememberMe: rememberMe);
+  Future<Result<List<Recipe>, Failure>> call(String query) async {
+    return repository.searchRecipes(query);
   }
 }
 
-final class LogoutUseCase {
-  LogoutUseCase(this.repository);
+final class ToggleFavoriteUseCase {
+  ToggleFavoriteUseCase(this.repository);
 
-  final AuthenticationRepository repository;
+  final RecipeRepository repository;
 
-  Future<void> call() async {
-    return repository.logout();
+  Future<Result<void, Failure>> call(String recipeId) async {
+    return repository.toggleFavorite(recipeId);
+  }
+}
+
+final class GetFavoritesUseCase {
+  GetFavoritesUseCase(this.repository);
+
+  final RecipeRepository repository;
+
+  Future<Result<List<Recipe>, Failure>> call() async {
+    return repository.getRecipes();
   }
 }

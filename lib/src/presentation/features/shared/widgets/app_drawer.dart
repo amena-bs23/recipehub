@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
-import '../../../../core/di/parts/services.dart';
-import '../../../../data/services/cache/cache_service.dart' as cache;
-import '../../../../domain/use_cases/authentication_use_case.dart';
-import '../../../core/theme/theme.dart';
-import '../providers/user_profile_provider.dart';
+import '../../../core/theme/theme_provider.dart';
+import '../../settings/riverpod/settings_provider.dart';
 
 class AppDrawer extends ConsumerWidget {
   const AppDrawer({super.key});
@@ -15,7 +11,8 @@ class AppDrawer extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final emailAsync = ref.watch(userEmailProvider);
     final themeMode = ref.watch(themeNotifierProvider);
-    final logoutUseCase = ref.read(logoutUseCaseProvider);
+
+    // final logoutUseCase = ref.read(logoutUseCaseProvider);
 
     return Drawer(
       child: ListView(
@@ -88,15 +85,15 @@ class AppDrawer extends ConsumerWidget {
                 ),
               );
 
-              if (shouldLogout == true) {
-                await logoutUseCase.execute();
-                // Clear all providers
-                ref.invalidate(cacheServiceProvider);
-                // Navigate to login
-                if (context.mounted) {
-                  context.go('/login'); // Adjust route as needed
-                }
-              }
+              // if (shouldLogout == true) {
+              //   await logoutUseCase.execute();
+              //   // Clear all providers
+              //   ref.invalidate(cacheServiceProvider);
+              //   // Navigate to login
+              //   if (context.mounted) {
+              //     context.go('/login'); // Adjust route as needed
+              //   }
+              // }
             },
           ),
         ],

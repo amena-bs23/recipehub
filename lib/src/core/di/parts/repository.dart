@@ -8,7 +8,12 @@ AuthenticationRepository authenticationRepository(Ref ref) {
   );
 }
 
-// @Riverpod(keepAlive: true)
-// RecipeRepository recipeRepository(Ref ref) {
-//   return RecipeRepositoryImpl(ref.read(recipeServiceProvider));
-// }
+@Riverpod(keepAlive: true)
+RecipeRepository recipeRepository(Ref ref) {
+  return RecipeRepositoryImpl(
+    remote: ref.read(
+      restClientServiceProvider,
+    ), // Use restClientServiceProvider
+    local: ref.read(cacheServiceProvider), // Use cacheServiceProvider
+  );
+}

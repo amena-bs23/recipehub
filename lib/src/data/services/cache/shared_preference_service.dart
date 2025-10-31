@@ -20,6 +20,12 @@ class SharedPreferencesService implements CacheService {
       case const (double):
         await prefs.setDouble(key.name, value as double);
         break;
+      case const (List<String>):
+        await prefs.setStringList(key.name, value as List<String>);
+        break;
+      case const (Set<String>):
+        await prefs.setStringList(key.name, (value as Set<String>).toList());
+        break;
       default:
         await prefs.setString(key.name, value as String);
     }
@@ -32,6 +38,9 @@ class SharedPreferencesService implements CacheService {
       const (int) => prefs.getInt(key.name) as T?,
       const (bool) => prefs.getBool(key.name) as T?,
       const (double) => prefs.getDouble(key.name) as T?,
+      const (List<String>) => prefs.getStringList(key.name) as T?,
+      const (Set<String>) => 
+        (prefs.getStringList(key.name)?.toSet() ?? <String>{}) as T?,
       _ => prefs.get(key.name) as T?,
     };
   }

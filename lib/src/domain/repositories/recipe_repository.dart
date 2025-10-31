@@ -1,5 +1,19 @@
-abstract class LocaleRepository {
-  Future<void> setLanguage(String language);
+import '../../core/base/failure.dart';
+import '../../core/base/repository.dart';
+import '../../core/base/result.dart';
+import '../entities/recipe_entity.dart';
 
-  Future<String> getLanguage();
+abstract base class RecipeRepository extends Repository {
+  Future<Result<List<Recipe>, Failure>> getRecipes({
+    int skip = 0,
+    int limit = 30,
+    String? query,
+    String? difficulty,
+  });
+
+  Future<Result<Recipe, Failure>> getRecipeById(String id);
+
+  Future<Result<List<Recipe>, Failure>> searchRecipes(String query);
+
+  Future<Result<void, Failure>> toggleFavorite(String recipeId);
 }

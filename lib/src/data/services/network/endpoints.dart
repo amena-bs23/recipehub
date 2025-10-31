@@ -11,4 +11,9 @@ class Endpoints {
   /// OTP
   static const String verifyOtp = '/otp/verify_otp/';
   static const String resendOtp = '/otp/resend_otp/';
+
+  /// Recipes
+  static const String recipes = '/recipes';
+  static String recipeById(int id) => '/recipes/$id';
+  static String recipeSearch(String query) => '/recipes/search?q=$query';
 }

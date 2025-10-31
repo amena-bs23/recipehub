@@ -9,5 +9,8 @@ CacheService cacheService(Ref ref) {
 
 @riverpod
 RestClient restClientService(Ref ref) {
-  return RestClient(ref.read(dioProvider));
+  return RestClient(
+    ref.read(dioProvider),
+    baseUrl: Endpoints.base, // Add baseUrl parameter
+  );
 }

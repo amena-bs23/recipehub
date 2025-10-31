@@ -9,6 +9,8 @@ enum CacheKey {
   isLoggedIn,
   rememberMe,
   language,
+  favoriteRecipeIds,
+  recentlyViewedRecipeIds,
 }
 
 abstract class CacheService {

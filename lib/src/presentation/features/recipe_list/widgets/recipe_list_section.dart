@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 
 class RecipeListSection extends StatelessWidget {
-  const RecipeListSection({super.key});
+  const RecipeListSection({super.key, required this.query, this.difficulty});
+
+  final String query;
+  final String? difficulty;
 
   @override
   Widget build(BuildContext context) {
