@@ -77,7 +77,9 @@ class _RecipeSearchBarState extends ConsumerState<RecipeSearchBar> {
         Expanded(
           flex: 1,
           child: DropdownButtonFormField<String>(
-            initialValue: searchState.difficulty,
+            value: searchState.difficulty,
+            isDense: true,
+            isExpanded: true,
             items: const [
               DropdownMenuItem(value: 'All', child: Text('All')),
               DropdownMenuItem(value: 'Easy', child: Text('Easy')),
@@ -91,8 +93,10 @@ class _RecipeSearchBarState extends ConsumerState<RecipeSearchBar> {
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+              isDense: true,
             ),
+            style: const TextStyle(fontSize: 14),
           ),
         ),
       ],
