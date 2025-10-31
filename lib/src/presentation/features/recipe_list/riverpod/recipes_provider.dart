@@ -8,7 +8,7 @@ import 'recipes_state.dart';
 
 class RecipesNotifier extends StateNotifier<RecipesState> {
   RecipesNotifier(this._getRecipesUseCase, this._toggleFavoriteUseCase)
-      : super(const RecipesState());
+    : super(const RecipesState());
 
   final GetRecipesUseCase _getRecipesUseCase;
   final ToggleFavoriteUseCase _toggleFavoriteUseCase;
@@ -21,11 +21,7 @@ class RecipesNotifier extends StateNotifier<RecipesState> {
     bool refresh = false,
   }) async {
     if (refresh) {
-      state = state.copyWith(
-        isRefreshing: true,
-        error: null,
-        currentPage: 0,
-      );
+      state = state.copyWith(isRefreshing: true, error: null, currentPage: 0);
     } else {
       state = state.copyWith(isLoading: true, error: null);
     }
@@ -39,23 +35,23 @@ class RecipesNotifier extends StateNotifier<RecipesState> {
 
     state = switch (result) {
       Success(:final data) => state.copyWith(
-          recipes: refresh ? data : [...state.recipes, ...data],
-          isLoading: false,
-          isRefreshing: false,
-          hasMore: data.length >= _pageSize,
-          currentPage: refresh ? 0 : state.currentPage + 1,
-          error: null,
-        ),
+        recipes: refresh ? data : [...state.recipes, ...data],
+        isLoading: false,
+        isRefreshing: false,
+        hasMore: data.length >= _pageSize,
+        currentPage: refresh ? 0 : state.currentPage + 1,
+        error: null,
+      ),
       Error(:final error) => state.copyWith(
-          isLoading: false,
-          isRefreshing: false,
-          error: error.message,
-        ),
+        isLoading: false,
+        isRefreshing: false,
+        error: error.message,
+      ),
       _ => state.copyWith(
-          isLoading: false,
-          isRefreshing: false,
-          error: 'Something went wrong',
-        ),
+        isLoading: false,
+        isRefreshing: false,
+        error: 'Something went wrong',
+      ),
     };
   }
 
@@ -64,15 +60,15 @@ class RecipesNotifier extends StateNotifier<RecipesState> {
 
     state = switch (result) {
       Success() => () {
-          // Update local state
-          final updatedRecipes = state.recipes.map((r) {
-            if (r.id == recipe.id) {
-              return recipe.copyWith(isFavorite: !recipe.isFavorite);
-            }
-            return r;
-          }).toList();
-          return state.copyWith(recipes: updatedRecipes);
-        }(),
+        // Update local state
+        final updatedRecipes = state.recipes.map((r) {
+          if (r.id == recipe.id) {
+            return recipe.copyWith(isFavorite: !recipe.isFavorite);
+          }
+          return r;
+        }).toList();
+        return state.copyWith(recipes: updatedRecipes);
+      }(),
       Error(:final error) => state.copyWith(error: error.message),
       _ => state.copyWith(error: 'Something went wrong'),
     };
@@ -85,7 +81,7 @@ class RecipesNotifier extends StateNotifier<RecipesState> {
 
 final recipesNotifierProvider =
     StateNotifierProvider<RecipesNotifier, RecipesState>((ref) {
-  final getRecipesUseCase = ref.read(getRecipesUseCaseProvider);
-  final toggleFavoriteUseCase = ref.read(toggleFavoriteUseCaseProvider);
-  return RecipesNotifier(getRecipesUseCase, toggleFavoriteUseCase);
-});
+      final getRecipesUseCase = ref.read(getRecipesUseCaseProvider);
+      final toggleFavoriteUseCase = ref.read(toggleFavoriteUseCaseProvider);
+      return RecipesNotifier(getRecipesUseCase, toggleFavoriteUseCase);
+    });

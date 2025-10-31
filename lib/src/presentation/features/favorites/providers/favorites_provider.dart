@@ -34,10 +34,8 @@ class FavoritesState {
 }
 
 class FavoritesNotifier extends StateNotifier<FavoritesState> {
-  FavoritesNotifier(
-    this._getRecipesUseCase,
-    this._toggleFavoriteUseCase,
-  ) : super(const FavoritesState()) {
+  FavoritesNotifier(this._getRecipesUseCase, this._toggleFavoriteUseCase)
+    : super(const FavoritesState()) {
     loadFavorites();
   }
 
@@ -56,24 +54,24 @@ class FavoritesNotifier extends StateNotifier<FavoritesState> {
 
     state = switch (result) {
       Success(:final data) => () {
-          final favorites = data.where((r) => r.isFavorite).toList();
-          return state.copyWith(
-            favorites: favorites,
-            isLoading: false,
-            isRefreshing: false,
-            error: null,
-          );
-        }(),
+        final favorites = data.where((r) => r.isFavorite).toList();
+        return state.copyWith(
+          favorites: favorites,
+          isLoading: false,
+          isRefreshing: false,
+          error: null,
+        );
+      }(),
       Error(:final error) => state.copyWith(
-          isLoading: false,
-          isRefreshing: false,
-          error: error.message,
-        ),
+        isLoading: false,
+        isRefreshing: false,
+        error: error.message,
+      ),
       _ => state.copyWith(
-          isLoading: false,
-          isRefreshing: false,
-          error: 'Something went wrong',
-        ),
+        isLoading: false,
+        isRefreshing: false,
+        error: 'Something went wrong',
+      ),
     };
   }
 
@@ -82,20 +80,18 @@ class FavoritesNotifier extends StateNotifier<FavoritesState> {
 
     state = switch (result) {
       Success() => () {
-          if (recipe.isFavorite) {
-            // Remove from favorites
-            return state.copyWith(
-              favorites: state.favorites
-                  .where((r) => r.id != recipe.id)
-                  .toList(),
-            );
-          } else {
-            // Add to favorites
-            return state.copyWith(
-              favorites: [...state.favorites, recipe.copyWith(isFavorite: true)],
-            );
-          }
-        }(),
+        if (recipe.isFavorite) {
+          // Remove from favorites
+          return state.copyWith(
+            favorites: state.favorites.where((r) => r.id != recipe.id).toList(),
+          );
+        } else {
+          // Add to favorites
+          return state.copyWith(
+            favorites: [...state.favorites, recipe.copyWith(isFavorite: true)],
+          );
+        }
+      }(),
       Error(:final error) => state.copyWith(error: error.message),
       _ => state.copyWith(error: 'Something went wrong'),
     };
@@ -130,7 +126,7 @@ class FavoritesNotifier extends StateNotifier<FavoritesState> {
 
 final favoritesNotifierProvider =
     StateNotifierProvider<FavoritesNotifier, FavoritesState>((ref) {
-  final getRecipesUseCase = ref.read(getRecipesUseCaseProvider);
-  final toggleFavoriteUseCase = ref.read(toggleFavoriteUseCaseProvider);
-  return FavoritesNotifier(getRecipesUseCase, toggleFavoriteUseCase);
-});
+      final getRecipesUseCase = ref.read(getRecipesUseCaseProvider);
+      final toggleFavoriteUseCase = ref.read(toggleFavoriteUseCaseProvider);
+      return FavoritesNotifier(getRecipesUseCase, toggleFavoriteUseCase);
+    });

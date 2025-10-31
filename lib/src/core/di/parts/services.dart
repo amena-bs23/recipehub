@@ -1,9 +1,10 @@
 part of '../dependency_injection.dart';
 
 @Riverpod(keepAlive: true)
-Future<CacheService> cacheService(Ref ref) async {
-  final prefs = await ref.watch(sharedPreferencesProvider.future);
-  return SharedPreferencesService(prefs);
+CacheService cacheService(Ref ref) {
+  return SharedPreferencesService(
+    ref.read(sharedPreferencesProvider).requireValue,
+  );
 }
 
 @riverpod

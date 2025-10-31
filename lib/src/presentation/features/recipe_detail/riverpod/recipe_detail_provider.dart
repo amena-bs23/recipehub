@@ -12,11 +12,7 @@ class RecipeDetailState {
 
   const RecipeDetailState({this.recipe, this.isLoading = false, this.error});
 
-  RecipeDetailState copyWith({
-    Recipe? recipe,
-    bool? isLoading,
-    String? error,
-  }) {
+  RecipeDetailState copyWith({Recipe? recipe, bool? isLoading, String? error}) {
     return RecipeDetailState(
       recipe: recipe ?? this.recipe,
       isLoading: isLoading ?? this.isLoading,
@@ -26,10 +22,8 @@ class RecipeDetailState {
 }
 
 class RecipeDetailNotifier extends StateNotifier<RecipeDetailState> {
-  RecipeDetailNotifier(
-    this._getRecipeByIdUseCase,
-    this._toggleFavoriteUseCase,
-  ) : super(const RecipeDetailState());
+  RecipeDetailNotifier(this._getRecipeByIdUseCase, this._toggleFavoriteUseCase)
+    : super(const RecipeDetailState());
 
   final GetRecipeByIdUseCase _getRecipeByIdUseCase;
   final ToggleFavoriteUseCase _toggleFavoriteUseCase;
@@ -41,18 +35,15 @@ class RecipeDetailNotifier extends StateNotifier<RecipeDetailState> {
 
     state = switch (result) {
       Success(:final data) => state.copyWith(
-          recipe: data,
-          isLoading: false,
-          error: null,
-        ),
+        recipe: data,
+        isLoading: false,
+        error: null,
+      ),
       Error(:final error) => state.copyWith(
-          isLoading: false,
-          error: error.message,
-        ),
-      _ => state.copyWith(
-          isLoading: false,
-          error: 'Something went wrong',
-        ),
+        isLoading: false,
+        error: error.message,
+      ),
+      _ => state.copyWith(isLoading: false, error: 'Something went wrong'),
     };
   }
 
@@ -63,10 +54,8 @@ class RecipeDetailNotifier extends StateNotifier<RecipeDetailState> {
 
     state = switch (result) {
       Success() => state.copyWith(
-          recipe: state.recipe!.copyWith(
-            isFavorite: !state.recipe!.isFavorite,
-          ),
-        ),
+        recipe: state.recipe!.copyWith(isFavorite: !state.recipe!.isFavorite),
+      ),
       Error(:final error) => state.copyWith(error: error.message),
       _ => state.copyWith(error: 'Something went wrong'),
     };
@@ -79,7 +68,7 @@ class RecipeDetailNotifier extends StateNotifier<RecipeDetailState> {
 
 final recipeDetailNotifierProvider =
     StateNotifierProvider<RecipeDetailNotifier, RecipeDetailState>((ref) {
-  final getRecipeByIdUseCase = ref.read(getRecipeByIdUseCaseProvider);
-  final toggleFavoriteUseCase = ref.read(toggleFavoriteUseCaseProvider);
-  return RecipeDetailNotifier(getRecipeByIdUseCase, toggleFavoriteUseCase);
-});
+      final getRecipeByIdUseCase = ref.read(getRecipeByIdUseCaseProvider);
+      final toggleFavoriteUseCase = ref.read(toggleFavoriteUseCaseProvider);
+      return RecipeDetailNotifier(getRecipeByIdUseCase, toggleFavoriteUseCase);
+    });
