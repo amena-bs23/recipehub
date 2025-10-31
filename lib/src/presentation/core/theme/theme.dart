@@ -1,50 +1,35 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
-final themeNotifierProvider = StateNotifierProvider<ThemeNotifier, ThemeMode>((
-  ref,
-) {
-  return ThemeNotifier();
-});
-
-class ThemeNotifier extends StateNotifier<ThemeMode> {
-  static const _key = 'theme_mode';
-  ThemeNotifier() : super(ThemeMode.system) {
-    _loadTheme();
-  }
-
-  Future<void> _loadTheme() async {
-    final prefs = await SharedPreferences.getInstance();
-    final theme = prefs.getString(_key);
-    if (theme == 'dark') {
-      state = ThemeMode.dark;
-    } else if (theme == 'light') {
-      state = ThemeMode.light;
-    }
-  }
-
-  Future<void> toggleTheme() async {
-    final prefs = await SharedPreferences.getInstance();
-    if (state == ThemeMode.light) {
-      state = ThemeMode.dark;
-      prefs.setString(_key, 'dark');
-    } else {
-      state = ThemeMode.light;
-      prefs.setString(_key, 'light');
-    }
-  }
-}
 
 class AppTheme {
-  static final light = ThemeData.light(
-    useMaterial3: true,
-  ).copyWith(colorScheme: ColorScheme.fromSeed(seedColor: Colors.orange));
+  static ThemeData get lightTheme {
+    return ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.light,
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: const Color(0xFF2E7D32), // Green theme
+        brightness: Brightness.light,
+      ),
+      appBarTheme: const AppBarTheme(centerTitle: true, elevation: 0),
+      cardTheme: CardThemeData(
+        elevation: 2,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+    );
+  }
 
-  static final dark = ThemeData.dark(useMaterial3: true).copyWith(
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: Colors.orange,
+  static ThemeData get darkTheme {
+    return ThemeData(
+      useMaterial3: true,
       brightness: Brightness.dark,
-    ),
-  );
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: const Color(0xFF4CAF50), // Green theme
+        brightness: Brightness.dark,
+      ),
+      appBarTheme: const AppBarTheme(centerTitle: true, elevation: 0),
+      cardTheme: CardThemeData(
+        elevation: 2,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+    );
+  }
 }
