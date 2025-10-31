@@ -19,12 +19,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           return const NoTransitionPage(
             child: AppStartupWidget(
               loading: SplashPage(),
-              loaded: SplashPage(),
+              loaded: RecipeListPage(),
             ),
           );
         },
       ),
-      GoRoute(path: '/home', builder: (_, __) => const RecipeListPage()),
       GoRoute(path: '/favorites', builder: (_, __) => const FavoritesPage()),
       GoRoute(
         path: '/recipe/:id',
