@@ -1,6 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:recipehub/src/presentation/core/router/routes.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../../../domain/entities/recipe_entity.dart';
@@ -36,6 +38,23 @@ class _RecipeDetailPageState extends ConsumerState<RecipeDetailPage> {
           SliverAppBar(
             expandedHeight: 300,
             pinned: true,
+            leading: Container(
+              margin: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.5),
+                shape: BoxShape.circle,
+              ),
+              child: IconButton(
+                icon: const Icon(Icons.arrow_back, color: Colors.white),
+                onPressed: () {
+                  if (context.canPop()) {
+                    context.pop();
+                  } else {
+                    context.go(Routes.home);
+                  }
+                },
+              ),
+            ),
             flexibleSpace: state.isLoading
                 ? FlexibleSpaceBar(
                     background: Shimmer.fromColors(

@@ -4,11 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/search_provider.dart';
 
 class RecipeSearchBar extends ConsumerStatefulWidget {
-  final SearchType searchType; // Add search type parameter
+  final SearchType searchType;
 
   const RecipeSearchBar({
     super.key,
-    required this.searchType, // Make it required
+    required this.searchType,
   });
 
   @override
@@ -17,9 +17,7 @@ class RecipeSearchBar extends ConsumerStatefulWidget {
 
 class _RecipeSearchBarState extends ConsumerState<RecipeSearchBar> {
   final TextEditingController searchTextController = TextEditingController();
-  late final searchNotifier = ref.read(
-    searchProvider(widget.searchType).notifier,
-  );
+  String? _lastSyncedPendingQuery;
 
   @override
   void initState() {
@@ -27,7 +25,8 @@ class _RecipeSearchBarState extends ConsumerState<RecipeSearchBar> {
     // Sync controller with provider state on init
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final currentState = ref.read(searchProvider(widget.searchType));
-      searchTextController.text = currentState.query;
+      searchTextController.text = currentState.pendingQuery;
+      _lastSyncedPendingQuery = currentState.pendingQuery;
     });
   }
 
@@ -39,8 +38,24 @@ class _RecipeSearchBarState extends ConsumerState<RecipeSearchBar> {
 
   @override
   Widget build(BuildContext context) {
-    // Watch search state for difficulty changes
+    // Watch search state for all UI updates
     final searchState = ref.watch(searchProvider(widget.searchType));
+    final searchNotifier = ref.read(searchProvider(widget.searchType).notifier);
+
+    // Sync controller text with provider state if it changed externally
+    // (e.g., when search is cleared programmatically)
+    if (_lastSyncedPendingQuery != null &&
+        searchState.pendingQuery != _lastSyncedPendingQuery &&
+        searchTextController.text != searchState.pendingQuery) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          searchTextController.text = searchState.pendingQuery;
+          _lastSyncedPendingQuery = searchState.pendingQuery;
+        }
+      });
+    } else if (_lastSyncedPendingQuery == null) {
+      _lastSyncedPendingQuery = searchState.pendingQuery;
+    }
 
     return Row(
       children: [
@@ -51,12 +66,13 @@ class _RecipeSearchBarState extends ConsumerState<RecipeSearchBar> {
             decoration: InputDecoration(
               hintText: 'Search recipes...',
               prefixIcon: const Icon(Icons.search),
-              suffixIcon: searchState.query.isNotEmpty
+              suffixIcon: searchState.hasPendingText
                   ? IconButton(
                       icon: const Icon(Icons.clear),
                       onPressed: () {
+                        _lastSyncedPendingQuery = '';
                         searchTextController.clear();
-                        searchNotifier.updateQuery('');
+                        searchNotifier.clearSearch();
                       },
                     )
                   : null,
@@ -65,10 +81,13 @@ class _RecipeSearchBarState extends ConsumerState<RecipeSearchBar> {
               ),
             ),
             onChanged: (value) {
-              // Real-time search update (or debounce if needed)
-              searchNotifier.updateQuery(value);
+              // Track the value we're updating to avoid sync loops
+              _lastSyncedPendingQuery = value;
+              // Update pending query in provider (triggers debounce)
+              searchNotifier.updatePendingQuery(value);
             },
             onSubmitted: (value) {
+              // Commit immediately on submit
               searchNotifier.updateSearch(value, searchState.difficulty);
             },
           ),
@@ -87,7 +106,11 @@ class _RecipeSearchBarState extends ConsumerState<RecipeSearchBar> {
               DropdownMenuItem(value: 'Hard', child: Text('Hard')),
             ],
             onChanged: (value) {
-              searchNotifier.updateDifficulty(value);
+              // Update difficulty and commit current text field value
+              searchNotifier.updateDifficulty(
+                value,
+                pendingQuery: searchTextController.text,
+              );
             },
             decoration: InputDecoration(
               border: OutlineInputBorder(
@@ -96,7 +119,10 @@ class _RecipeSearchBarState extends ConsumerState<RecipeSearchBar> {
               contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
               isDense: true,
             ),
-            style: const TextStyle(fontSize: 14),
+            style: TextStyle(
+              fontSize: 14,
+              color: Theme.of(context).textTheme.bodyLarge?.color,
+            ),
           ),
         ),
       ],

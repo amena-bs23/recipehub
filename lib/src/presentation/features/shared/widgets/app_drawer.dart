@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/theme_provider.dart';
 import '../../settings/riverpod/settings_provider.dart';
@@ -43,6 +44,15 @@ class AppDrawer extends ConsumerWidget {
               ],
             ),
           ),
+          ListTile(
+            leading: const Icon(Icons.favorite),
+            title: const Text('Favorites'),
+            onTap: () {
+              Navigator.pop(context); // Close the drawer
+              context.go('/favorites');
+            },
+          ),
+          const Divider(),
           ListTile(
             leading: const Icon(Icons.dark_mode),
             title: const Text('Theme'),
