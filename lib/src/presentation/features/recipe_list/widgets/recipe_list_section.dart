@@ -23,14 +23,16 @@ class _RecipeListSectionState extends ConsumerState<RecipeListSection> {
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
-    
+
     // Initial load
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final searchState = ref.read(searchProvider(SearchType.recipes));
       _lastQuery = searchState.query.isEmpty ? null : searchState.query;
       _lastDifficulty = searchState.difficulty;
-      
-      ref.read(recipesNotifierProvider.notifier).loadRecipes(
+
+      ref
+          .read(recipesNotifierProvider.notifier)
+          .loadRecipes(
             query: _lastQuery,
             difficulty: _lastDifficulty,
             refresh: false,
@@ -49,9 +51,11 @@ class _RecipeListSectionState extends ConsumerState<RecipeListSection> {
         _scrollController.position.maxScrollExtent * 0.9) {
       final recipesState = ref.read(recipesNotifierProvider);
       final searchState = ref.read(searchProvider(SearchType.recipes));
-      
+
       if (!recipesState.isLoading && recipesState.hasMore) {
-        ref.read(recipesNotifierProvider.notifier).loadRecipes(
+        ref
+            .read(recipesNotifierProvider.notifier)
+            .loadRecipes(
               query: searchState.query.isEmpty ? null : searchState.query,
               difficulty: searchState.difficulty,
             );
@@ -68,12 +72,10 @@ class _RecipeListSectionState extends ConsumerState<RecipeListSection> {
     if (_lastQuery != query || _lastDifficulty != difficulty) {
       _lastQuery = query;
       _lastDifficulty = difficulty;
-      
-      ref.read(recipesNotifierProvider.notifier).loadRecipes(
-            query: query,
-            difficulty: difficulty,
-            refresh: true,
-          );
+
+      ref
+          .read(recipesNotifierProvider.notifier)
+          .loadRecipes(query: query, difficulty: difficulty, refresh: true);
     }
   }
 
@@ -88,15 +90,19 @@ class _RecipeListSectionState extends ConsumerState<RecipeListSection> {
       _loadRecipesIfNeeded();
     });
 
-    if (recipesState.isLoading && recipesState.recipes.isEmpty) {
+    final recipeList = recipesState.recipeList;
+
+    if (recipesState.isLoading && recipeList.isEmpty) {
       return const _LoadingSkeleton();
     }
 
-    if (recipesState.error != null && recipesState.recipes.isEmpty) {
+    if (recipesState.isHardError) {
       return _ErrorWidget(
-        error: recipesState.error!,
+        error: recipesState.error ?? 'An error occurred',
         onRetry: () {
-          ref.read(recipesNotifierProvider.notifier).loadRecipes(
+          ref
+              .read(recipesNotifierProvider.notifier)
+              .loadRecipes(
                 query: searchState.query.isEmpty ? null : searchState.query,
                 difficulty: searchState.difficulty,
                 refresh: true,
@@ -105,7 +111,7 @@ class _RecipeListSectionState extends ConsumerState<RecipeListSection> {
       );
     }
 
-    if (recipesState.recipes.isEmpty && !recipesState.isLoading) {
+    if (recipeList.isEmpty && !recipesState.isLoading) {
       return const _EmptyWidget();
     }
 
@@ -115,7 +121,7 @@ class _RecipeListSectionState extends ConsumerState<RecipeListSection> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Text(
-            'All Recipes (${recipesState.recipes.length})',
+            'All Recipes (${recipeList.length})',
             style: Theme.of(
               context,
             ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
@@ -133,13 +139,13 @@ class _RecipeListSectionState extends ConsumerState<RecipeListSection> {
             crossAxisSpacing: 16,
             mainAxisSpacing: 16,
           ),
-          itemCount: recipesState.recipes.length + (recipesState.isLoading ? 2 : 0),
+          itemCount: recipeList.length + (recipesState.isLoading ? 2 : 0),
           itemBuilder: (context, index) {
-            if (index >= recipesState.recipes.length) {
+            if (index >= recipeList.length) {
               return _RecipeCardSkeleton();
             }
 
-            final recipe = recipesState.recipes[index];
+            final recipe = recipeList[index];
             return RecipeCard(
               recipe: recipe,
               onTap: () {
@@ -153,7 +159,7 @@ class _RecipeListSectionState extends ConsumerState<RecipeListSection> {
             );
           },
         ),
-        if (recipesState.isLoading && recipesState.recipes.isNotEmpty)
+        if (recipesState.isLoading && recipeList.isNotEmpty)
           const Padding(
             padding: EdgeInsets.all(16.0),
             child: Center(child: CircularProgressIndicator()),
@@ -162,6 +168,7 @@ class _RecipeListSectionState extends ConsumerState<RecipeListSection> {
     );
   }
 }
+
 class _LoadingSkeleton extends StatelessWidget {
   const _LoadingSkeleton();
 
@@ -291,4 +298,3 @@ class _EmptyWidget extends StatelessWidget {
     );
   }
 }
-
