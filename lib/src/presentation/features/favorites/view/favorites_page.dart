@@ -21,9 +21,20 @@ class FavoritesPage extends ConsumerWidget {
         .read(favoritesNotifierProvider.notifier)
         .filterFavorites(searchState.query, searchState.difficulty);
 
+    final canPop = context.canPop();
+    
     return Scaffold(
-      appBar: AppBar(title: const Text('Favorites')),
-      drawer: const AppDrawer(),
+      appBar: AppBar(
+        title: const Text('Favorites'),
+        leading: canPop
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () => context.pop(),
+              )
+            : null,
+        automaticallyImplyLeading: !canPop,
+      ),
+      drawer: canPop ? null : const AppDrawer(),
       body: RefreshIndicator(
         onRefresh: () async {
           await ref
