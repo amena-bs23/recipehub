@@ -23,22 +23,35 @@ class AppDrawer extends ConsumerWidget {
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.primary,
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.end,
+            child: Stack(
               children: [
-                const Icon(Icons.person, size: 48, color: Colors.white),
-                const SizedBox(height: 8),
-                Text(
-                  emailAsync.when(
-                    data: (email) => email ?? 'User',
-                    loading: () => 'Loading...',
-                    error: (_, __) => 'User',
-                  ),
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    const Icon(Icons.person, size: 48, color: Colors.white),
+                    const SizedBox(height: 8),
+                    Text(
+                      emailAsync.when(
+                        data: (email) => email ?? 'User',
+                        loading: () => 'Loading...',
+                        error: (_, __) => 'User',
+                      ),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: IconButton(
+                    icon: const Icon(Icons.close, color: Colors.white),
+                    onPressed: () => Navigator.pop(context),
+                    tooltip: 'Close',
                   ),
                 ),
               ],
@@ -49,7 +62,7 @@ class AppDrawer extends ConsumerWidget {
             title: const Text('Favorites'),
             onTap: () {
               Navigator.pop(context); // Close the drawer
-              context.go('/favorites');
+              context.push('/favorites');
             },
           ),
           const Divider(),
@@ -72,40 +85,40 @@ class AppDrawer extends ConsumerWidget {
             },
           ),
           const Divider(),
-          ListTile(
-            leading: const Icon(Icons.logout, color: Colors.red),
-            title: const Text('Logout'),
-            onTap: () async {
-              // Show confirmation dialog
-              final shouldLogout = await showDialog<bool>(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: const Text('Logout'),
-                  content: const Text('Are you sure you want to logout?'),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context, false),
-                      child: const Text('Cancel'),
-                    ),
-                    TextButton(
-                      onPressed: () => Navigator.pop(context, true),
-                      child: const Text('Logout'),
-                    ),
-                  ],
-                ),
-              );
-
-              // if (shouldLogout == true) {
-              //   await logoutUseCase.execute();
-              //   // Clear all providers
-              //   ref.invalidate(cacheServiceProvider);
-              //   // Navigate to login
-              //   if (context.mounted) {
-              //     context.go('/login'); // Adjust route as needed
-              //   }
-              // }
-            },
-          ),
+          // ListTile(
+          //   leading: const Icon(Icons.logout, color: Colors.red),
+          //   title: const Text('Logout'),
+          //   onTap: () async {
+          //     // Show confirmation dialog
+          //     final shouldLogout = await showDialog<bool>(
+          //       context: context,
+          //       builder: (context) => AlertDialog(
+          //         title: const Text('Logout'),
+          //         content: const Text('Are you sure you want to logout?'),
+          //         actions: [
+          //           TextButton(
+          //             onPressed: () => Navigator.pop(context, false),
+          //             child: const Text('Cancel'),
+          //           ),
+          //           TextButton(
+          //             onPressed: () => Navigator.pop(context, true),
+          //             child: const Text('Logout'),
+          //           ),
+          //         ],
+          //       ),
+          //     );
+          //
+          //     // if (shouldLogout == true) {
+          //     //   await logoutUseCase.execute();
+          //     //   // Clear all providers
+          //     //   ref.invalidate(cacheServiceProvider);
+          //     //   // Navigate to login
+          //     //   if (context.mounted) {
+          //     //     context.go('/login'); // Adjust route as needed
+          //     //   }
+          //     // }
+          //   },
+          // ),
         ],
       ),
     );
