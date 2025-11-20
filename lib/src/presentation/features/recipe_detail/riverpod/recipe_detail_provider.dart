@@ -1,4 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:recipehub/src/presentation/features/favorites/providers/favorites_provider.dart';
+import 'package:recipehub/src/presentation/features/recipe_list/riverpod/recipes_provider.dart';
 
 import '../../../../core/base/result.dart';
 import '../../../../core/di/dependency_injection.dart';
@@ -22,11 +24,15 @@ class RecipeDetailState {
 }
 
 class RecipeDetailNotifier extends StateNotifier<RecipeDetailState> {
-  RecipeDetailNotifier(this._getRecipeByIdUseCase, this._toggleFavoriteUseCase)
-    : super(const RecipeDetailState());
+  RecipeDetailNotifier(
+    this._getRecipeByIdUseCase,
+    this._toggleFavoriteUseCase,
+    this._ref,
+  ) : super(const RecipeDetailState());
 
   final GetRecipeByIdUseCase _getRecipeByIdUseCase;
   final ToggleFavoriteUseCase _toggleFavoriteUseCase;
+  final Ref _ref;
 
   Future<void> loadRecipe(String id) async {
     state = state.copyWith(isLoading: true, error: null);
@@ -53,9 +59,15 @@ class RecipeDetailNotifier extends StateNotifier<RecipeDetailState> {
     final result = await _toggleFavoriteUseCase.call(state.recipe!.id);
 
     state = switch (result) {
-      Success() => state.copyWith(
-        recipe: state.recipe!.copyWith(isFavorite: !state.recipe!.isFavorite),
-      ),
+      Success() => () {
+        // Invalidate recipes and favorites providers to sync state
+        _ref.invalidate(recipesNotifierProvider);
+        _ref.invalidate(favoritesNotifierProvider);
+        
+        return state.copyWith(
+          recipe: state.recipe!.copyWith(isFavorite: !state.recipe!.isFavorite),
+        );
+      }(),
       Error(:final error) => state.copyWith(error: error.message),
       _ => state.copyWith(error: 'Something went wrong'),
     };
@@ -70,5 +82,5 @@ final recipeDetailNotifierProvider =
     StateNotifierProvider<RecipeDetailNotifier, RecipeDetailState>((ref) {
       final getRecipeByIdUseCase = ref.read(getRecipeByIdUseCaseProvider);
       final toggleFavoriteUseCase = ref.read(toggleFavoriteUseCaseProvider);
-      return RecipeDetailNotifier(getRecipeByIdUseCase, toggleFavoriteUseCase);
+      return RecipeDetailNotifier(getRecipeByIdUseCase, toggleFavoriteUseCase, ref);
     });

@@ -16,7 +16,7 @@ class RecipeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Semantics(
-      label: recipe.title,
+      label: 'recipe_id_${recipe.id}',
       button: true,
       child: Card(
         clipBehavior: Clip.antiAlias,

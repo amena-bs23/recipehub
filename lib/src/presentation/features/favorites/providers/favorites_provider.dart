@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:recipehub/src/presentation/features/recipe_list/riverpod/recipes_provider.dart';
 
 import '../../../../core/base/result.dart';
 import '../../../../core/di/dependency_injection.dart';
@@ -34,13 +35,17 @@ class FavoritesState {
 }
 
 class FavoritesNotifier extends StateNotifier<FavoritesState> {
-  FavoritesNotifier(this._getRecipesUseCase, this._toggleFavoriteUseCase)
-    : super(const FavoritesState()) {
+  FavoritesNotifier(
+    this._getRecipesUseCase,
+    this._toggleFavoriteUseCase,
+    this._ref,
+  ) : super(const FavoritesState()) {
     loadFavorites();
   }
 
   final GetRecipesUseCase _getRecipesUseCase;
   final ToggleFavoriteUseCase _toggleFavoriteUseCase;
+  final Ref _ref;
 
   Future<void> loadFavorites({bool refresh = false}) async {
     state = state.copyWith(
@@ -80,17 +85,21 @@ class FavoritesNotifier extends StateNotifier<FavoritesState> {
 
     state = switch (result) {
       Success() => () {
-        if (recipe.isFavorite) {
-          // Remove from favorites
-          return state.copyWith(
-            favorites: state.favorites.where((r) => r.id != recipe.id).toList(),
-          );
-        } else {
-          // Add to favorites
-          return state.copyWith(
-            favorites: [...state.favorites, recipe.copyWith(isFavorite: true)],
-          );
-        }
+        final newState = recipe.isFavorite
+            ? // Remove from favorites
+              state.copyWith(
+                favorites: state.favorites.where((r) => r.id != recipe.id).toList(),
+              )
+            : // Add to favorites
+              state.copyWith(
+                favorites: [...state.favorites, recipe.copyWith(isFavorite: true)],
+              );
+        
+        // Invalidate recipes provider to sync state
+        // This will cause it to reload with fresh data when accessed
+        _ref.invalidate(recipesNotifierProvider);
+        
+        return newState;
       }(),
       Error(:final error) => state.copyWith(error: error.message),
       _ => state.copyWith(error: 'Something went wrong'),
@@ -128,5 +137,5 @@ final favoritesNotifierProvider =
     StateNotifierProvider<FavoritesNotifier, FavoritesState>((ref) {
       final getRecipesUseCase = ref.read(getRecipesUseCaseProvider);
       final toggleFavoriteUseCase = ref.read(toggleFavoriteUseCaseProvider);
-      return FavoritesNotifier(getRecipesUseCase, toggleFavoriteUseCase);
+      return FavoritesNotifier(getRecipesUseCase, toggleFavoriteUseCase, ref);
     });

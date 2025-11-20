@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:recipehub/src/presentation/features/favorites/providers/favorites_provider.dart';
 
 import '../../../../core/base/result.dart';
 import '../../../../core/di/dependency_injection.dart';
@@ -7,15 +8,13 @@ import '../../../../domain/use_cases/recipe_use_case.dart';
 import 'recipes_state.dart';
 
 class RecipesNotifier extends Notifier<RecipesState> {
-  late final GetRecipesUseCase _getRecipesUseCase;
-  late final ToggleFavoriteUseCase _toggleFavoriteUseCase;
+  GetRecipesUseCase get _getRecipesUseCase => ref.read(getRecipesUseCaseProvider);
+  ToggleFavoriteUseCase get _toggleFavoriteUseCase => ref.read(toggleFavoriteUseCaseProvider);
 
   static const int _pageSize = 30;
 
   @override
   RecipesState build() {
-    _getRecipesUseCase = ref.read(getRecipesUseCaseProvider);
-    _toggleFavoriteUseCase = ref.read(toggleFavoriteUseCaseProvider);
     return const RecipesState();
   }
 
@@ -104,6 +103,9 @@ class RecipesNotifier extends Notifier<RecipesState> {
         state = state.copyWith(
           recipes: AsyncValue.data(updatedRecipes),
         );
+        
+        // Invalidate favorites provider to sync state
+        ref.invalidate(favoritesNotifierProvider);
       case Error(:final error):
         state = state.copyWith(
           recipes: AsyncValue<List<Recipe>>.error(
