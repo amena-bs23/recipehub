@@ -22,7 +22,7 @@ final class RecipeRepositoryImpl extends RecipeRepository {
   }
 
   @override
-  Future<Result<List<Recipe>, Failure>> getRecipes({
+  Future<Result<List<RecipeListResponseEntity>, Failure>> getRecipes({
     int skip = 0,
     int limit = 30,
     String? query,
@@ -37,14 +37,16 @@ final class RecipeRepositoryImpl extends RecipeRepository {
       );
 
       // Parse response similar to AuthenticationRepositoryImpl
-      final data = response.data;
-      final recipeListResponse = RecipeListResponse.fromJson(data);
+      final responseData = response.data;
+      final List<RecipeModel> recipeListModel = responseData
+          .map((json) => RecipeModel.fromJson(json))
+          .toList();
 
+      // Convert to RecipeListResponseEntity with proper isFavorite flag.
       final favoriteIds = _favoriteIds;
-
-      List<Recipe> recipes = recipeListResponse.recipes
+      List<RecipeListResponseEntity> recipes = recipeListModel
           .map(
-            (model) => model.toEntity(
+            (model) => model.toListEntity(
               isFavorite: favoriteIds.contains(model.id.toString()),
             ),
           )
@@ -85,7 +87,7 @@ final class RecipeRepositoryImpl extends RecipeRepository {
       final response = await remote.searchRecipes(query);
 
       final data = response.data;
-      final recipeListResponse = RecipeListResponse.fromJson(data);
+      final recipeListResponse = RecipeListResponseModel.fromJson(data);
       final favoriteIds = _favoriteIds;
 
       return recipeListResponse.recipes

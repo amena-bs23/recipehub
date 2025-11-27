@@ -4,7 +4,7 @@ import '../../core/base/result.dart';
 import '../entities/recipe_entity.dart';
 
 abstract base class RecipeRepository extends Repository {
-  Future<Result<List<Recipe>, Failure>> getRecipes({
+  Future<Result<List<RecipeListResponseEntity>, Failure>> getRecipes({
     int skip = 0,
     int limit = 30,
     String? query,

@@ -2,16 +2,20 @@ import 'package:equatable/equatable.dart';
 
 enum Difficulty { easy, medium, hard }
 
+Difficulty difficultyFromJson(String? value) {
+  switch (value?.toLowerCase()) {
+    case 'easy':
+      return Difficulty.easy;
+    case 'medium':
+      return Difficulty.medium;
+    case 'hard':
+      return Difficulty.hard;
+    default:
+      return Difficulty.easy; // fallback
+  }
+}
+
 class Recipe extends Equatable {
-  final String id;
-  final String title;
-  final String description;
-  final String imageUrl;
-  final int cookingTime; // in minutes
-  final Difficulty difficulty;
-  final List<String> ingredients;
-  final List<String> steps;
-  final bool isFavorite;
   const Recipe({
     required this.id,
     required this.title,
@@ -23,6 +27,17 @@ class Recipe extends Equatable {
     required this.steps,
     this.isFavorite = false,
   });
+
+  final String id;
+  final String title;
+  final String description;
+  final String imageUrl;
+  final int cookingTime; // in minutes
+  final Difficulty difficulty;
+  final List<String> ingredients;
+  final List<String> steps;
+  final bool isFavorite;
+
   @override
   List<Object?> get props => [
     id,
@@ -35,6 +50,7 @@ class Recipe extends Equatable {
     steps,
     isFavorite,
   ];
+
   Recipe copyWith({
     String? id,
     String? title,
@@ -58,4 +74,54 @@ class Recipe extends Equatable {
       isFavorite: isFavorite ?? this.isFavorite,
     );
   }
+}
+
+class RecipeResponseBaseEntity {
+  RecipeResponseBaseEntity({
+    required this.name,
+    required this.image,
+    required this.cookTimeMinutes,
+    required this.difficulty,
+    this.isFavorite = false,
+  });
+
+  final String name;
+  final String image;
+  final int cookTimeMinutes; // in minutes
+  final Difficulty difficulty;
+  final bool isFavorite;
+}
+
+class RecipeListResponseEntity extends RecipeResponseBaseEntity {
+  RecipeListResponseEntity({
+    required super.name,
+    required super.image,
+    required super.cookTimeMinutes,
+    required super.difficulty,
+    super.isFavorite = false,
+  });
+}
+
+class RecipeDetailsResponseEntity extends RecipeResponseBaseEntity {
+  RecipeDetailsResponseEntity({
+    required super.name,
+    required super.image,
+    required super.cookTimeMinutes,
+    required super.difficulty,
+    super.isFavorite = false,
+    required this.description,
+    required this.ingredients,
+    required this.steps,
+  });
+
+  final String description;
+  final List<String> ingredients;
+  final List<String> steps;
+}
+
+class RecipeListRequestEntity {
+  RecipeListRequestEntity({required this.query, required this.difficulty});
+
+  final String query;
+  final Difficulty difficulty;
 }

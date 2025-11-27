@@ -8,18 +8,24 @@ final class GetRecipesUseCase {
 
   final RecipeRepository repository;
 
-  Future<Result<List<Recipe>, Failure>> call({
+  Future<Result<List<RecipeListResponseEntity>, String>> call({
     int skip = 0,
     int limit = 30,
     String? query,
     String? difficulty,
   }) async {
-    return repository.getRecipes(
+    final result = repository.getRecipes(
       skip: skip,
       limit: limit,
       query: query,
       difficulty: difficulty,
     );
+
+    return switch (result) {
+      Success(:final data) => Success(data),
+      Error(:final error) => Error(error.message),
+      _ => const Error('Something went wrong'),
+    };
   }
 }
 
@@ -58,7 +64,7 @@ final class GetFavoritesUseCase {
 
   final RecipeRepository repository;
 
-  Future<Result<List<Recipe>, Failure>> call() async {
+  Future<Result<List<RecipeListResponseEntity>, Failure>> call() async {
     return repository.getRecipes();
   }
 }
