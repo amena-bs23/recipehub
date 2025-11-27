@@ -28,6 +28,10 @@ class _RecipeDetailPageState extends ConsumerState<RecipeDetailPage> {
     });
   }
 
+  void onFavoriteToggle() {
+    ref.read(recipeDetailNotifierProvider.notifier).toggleFavorite();
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(recipeDetailNotifierProvider);
@@ -77,18 +81,23 @@ class _RecipeDetailPageState extends ConsumerState<RecipeDetailPage> {
                   ),
             actions: [
               if (state.recipe != null)
-                IconButton(
-                  icon: Icon(
-                    state.recipe!.isFavorite
-                        ? Icons.favorite
-                        : Icons.favorite_border,
-                    color: state.recipe!.isFavorite ? Colors.red : Colors.white,
+                Semantics(
+                  label: state.recipe!.isFavorite
+                      ? 'favorite_${state.recipe!.id}'
+                      : 'not_favorite_${state.recipe!.id}',
+                  button: true,
+                  onTap: onFavoriteToggle,
+                  child: IconButton(
+                    icon: Icon(
+                      state.recipe!.isFavorite
+                          ? Icons.favorite
+                          : Icons.favorite_border,
+                      color: state.recipe!.isFavorite
+                          ? Colors.red
+                          : Colors.white,
+                    ),
+                    onPressed: onFavoriteToggle,
                   ),
-                  onPressed: () {
-                    ref
-                        .read(recipeDetailNotifierProvider.notifier)
-                        .toggleFavorite();
-                  },
                 ),
             ],
           ),
@@ -113,6 +122,7 @@ class _RecipeDetailPageState extends ConsumerState<RecipeDetailPage> {
     );
   }
 }
+
 class _RecipeContent extends StatelessWidget {
   const _RecipeContent({required this.recipe});
 
@@ -340,4 +350,3 @@ class _ErrorContent extends StatelessWidget {
     );
   }
 }
-

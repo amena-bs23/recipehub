@@ -57,14 +57,21 @@ class RecipeCard extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                        IconButton(
-                          icon: Icon(
-                            recipe.isFavorite
-                                ? Icons.favorite
-                                : Icons.favorite_border,
-                            color: recipe.isFavorite ? Colors.red : null,
+                        Semantics(
+                          label: recipe.isFavorite
+                              ? 'favorite_${recipe.id}'
+                              : 'not_favorite_${recipe.id}',
+                          button: true,
+                          onTap: onFavoriteToggle,
+                          child: IconButton(
+                            icon: Icon(
+                              recipe.isFavorite
+                                  ? Icons.favorite
+                                  : Icons.favorite_border,
+                              color: recipe.isFavorite ? Colors.red : null,
+                            ),
+                            onPressed: onFavoriteToggle,
                           ),
-                          onPressed: onFavoriteToggle,
                         ),
                       ],
                     ),

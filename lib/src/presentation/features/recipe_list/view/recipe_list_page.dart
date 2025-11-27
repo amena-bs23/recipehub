@@ -27,18 +27,18 @@ class RecipeListPage extends ConsumerWidget {
                 refresh: true,
               );
         },
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
+        child: const SingleChildScrollView(
+          physics: AlwaysScrollableScrollPhysics(),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 12),
-              const Padding(
+              SizedBox(height: 12),
+              Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16.0),
                 child: RecipeSearchBar(searchType: SearchType.recipes),
               ),
-              const SizedBox(height: 16),
-              const RecipeListSection(),
+              SizedBox(height: 16),
+              RecipeListSection(),
             ],
           ),
         ),
