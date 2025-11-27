@@ -13,7 +13,7 @@ abstract base class RecipeRepository extends Repository {
 
   Future<Result<Recipe, Failure>> getRecipeById(String id);
 
-  Future<Result<List<Recipe>, Failure>> searchRecipes(String query);
+  // Future<Result<List<Recipe>, Failure>> searchRecipes(String query);
 
   Future<Result<void, Failure>> toggleFavorite(String recipeId);
 }

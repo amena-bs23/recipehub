@@ -32,10 +32,10 @@ GetRecipeByIdUseCase getRecipeByIdUseCase(Ref ref) {
   return GetRecipeByIdUseCase(ref.read(recipeRepositoryProvider));
 }
 
-@riverpod
+/*@riverpod
 SearchRecipesUseCase searchRecipesUseCase(Ref ref) {
   return SearchRecipesUseCase(ref.read(recipeRepositoryProvider));
-}
+}*/
 
 @riverpod
 ToggleFavoriteUseCase toggleFavoriteUseCase(Ref ref) {

@@ -78,6 +78,7 @@ class Recipe extends Equatable {
 
 class RecipeResponseBaseEntity {
   RecipeResponseBaseEntity({
+    required this.id,
     required this.name,
     required this.image,
     required this.cookTimeMinutes,
@@ -85,6 +86,7 @@ class RecipeResponseBaseEntity {
     this.isFavorite = false,
   });
 
+  final String id;
   final String name;
   final String image;
   final int cookTimeMinutes; // in minutes
@@ -94,16 +96,36 @@ class RecipeResponseBaseEntity {
 
 class RecipeListResponseEntity extends RecipeResponseBaseEntity {
   RecipeListResponseEntity({
+    required super.id,
     required super.name,
     required super.image,
     required super.cookTimeMinutes,
     required super.difficulty,
     super.isFavorite = false,
   });
+
+  RecipeListResponseEntity copyWith({
+    String? id,
+    String? name,
+    String? image,
+    int? cookTimeMinutes,
+    Difficulty? difficulty,
+    bool? isFavorite,
+  }) {
+    return RecipeListResponseEntity(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      image: image ?? this.image,
+      cookTimeMinutes: cookTimeMinutes ?? this.cookTimeMinutes,
+      difficulty: difficulty ?? this.difficulty,
+      isFavorite: isFavorite ?? this.isFavorite,
+    );
+  }
 }
 
 class RecipeDetailsResponseEntity extends RecipeResponseBaseEntity {
   RecipeDetailsResponseEntity({
+    required super.id,
     required super.name,
     required super.image,
     required super.cookTimeMinutes,

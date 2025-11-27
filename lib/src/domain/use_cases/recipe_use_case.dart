@@ -14,7 +14,7 @@ final class GetRecipesUseCase {
     String? query,
     String? difficulty,
   }) async {
-    final result = repository.getRecipes(
+    final result = await repository.getRecipes(
       skip: skip,
       limit: limit,
       query: query,
@@ -39,7 +39,7 @@ final class GetRecipeByIdUseCase {
   }
 }
 
-final class SearchRecipesUseCase {
+/*final class SearchRecipesUseCase {
   SearchRecipesUseCase(this.repository);
 
   final RecipeRepository repository;
@@ -47,7 +47,7 @@ final class SearchRecipesUseCase {
   Future<Result<List<Recipe>, Failure>> call(String query) async {
     return repository.searchRecipes(query);
   }
-}
+}*/
 
 final class ToggleFavoriteUseCase {
   ToggleFavoriteUseCase(this.repository);

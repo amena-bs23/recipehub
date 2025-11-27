@@ -1,4 +1,3 @@
-import 'package:recipehub/src/core/base/failure.dart';
 import 'package:recipehub/src/core/base/result.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -12,18 +11,19 @@ part 'recipe_list_provider.g.dart';
 class RecipeListNotifier extends _$RecipeListNotifier {
   late GetRecipesUseCase _getRecipesUseCase;
 
+  @override
   Future<List<RecipeListResponseEntity>> build() async {
     _getRecipesUseCase = ref.read(getRecipesUseCaseProvider);
-    return await fetchRecipes();
+    return await _loadRecipes();
   }
 
-  Future<Result<List<RecipeListResponseEntity>, Failure>> fetchRecipes() async {
+  Future<List<RecipeListResponseEntity>> _loadRecipes() async {
     final result = await _getRecipesUseCase.call();
 
     return switch (result) {
       Success(:final data) => data,
-      Error(:final error) => error,
-      _ => const Error('Something went wrong'),
+      Error(:final error) => throw Exception(error),
+      _ => throw Exception('Unknown error'),
     };
   }
 }

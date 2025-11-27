@@ -38,9 +38,13 @@ final class RecipeRepositoryImpl extends RecipeRepository {
 
       // Parse response similar to AuthenticationRepositoryImpl
       final responseData = response.data;
-      final List<RecipeModel> recipeListModel = responseData
-          .map((json) => RecipeModel.fromJson(json))
-          .toList();
+      final recipeListModel =
+          (responseData['recipes'] as List<dynamic>?)
+              ?.map(
+                (json) => RecipeModel.fromJson(json as Map<String, dynamic>),
+              )
+              .toList() ??
+          [];
 
       // Convert to RecipeListResponseEntity with proper isFavorite flag.
       final favoriteIds = _favoriteIds;
@@ -80,7 +84,7 @@ final class RecipeRepositoryImpl extends RecipeRepository {
     });
   }
 
-  @override
+  /*@override
   Future<Result<List<Recipe>, Failure>> searchRecipes(String query) async {
     return asyncGuard(() async {
       // Use RestClient
@@ -98,7 +102,7 @@ final class RecipeRepositoryImpl extends RecipeRepository {
           )
           .toList();
     });
-  }
+  }*/
 
   @override
   Future<Result<void, Failure>> toggleFavorite(String recipeId) async {

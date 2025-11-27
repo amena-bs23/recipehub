@@ -76,6 +76,7 @@ class RecipeModel {
 
   RecipeListResponseEntity toListEntity({bool isFavorite = false}) {
     return RecipeListResponseEntity(
+      id: id.toString(),
       name: name,
       image: image,
       cookTimeMinutes: cookTimeMinutes,
@@ -86,6 +87,7 @@ class RecipeModel {
 
   RecipeDetailsResponseEntity toDetailsEntity({bool isFavorite = false}) {
     return RecipeDetailsResponseEntity(
+      id: id.toString(),
       name: name,
       image: image,
       cookTimeMinutes: cookTimeMinutes,
@@ -98,7 +100,7 @@ class RecipeModel {
   }
 }
 
-class RecipeListResponseModel extends RecipeListResponseEntity {
+/*class RecipeListResponseModel extends RecipeListResponseEntity {
   final List<RecipeModel> recipes;
   final int total;
   final int skip;
@@ -121,7 +123,7 @@ class RecipeListResponseModel extends RecipeListResponseEntity {
       limit: json['limit'] as int? ?? 0,
     );
   }
-}
+}*/
 
 class RecipeListRequestModel {
   RecipeListRequestModel({

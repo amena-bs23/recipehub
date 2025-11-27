@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import '../../../../domain/entities/recipe_entity.dart';
 
 class RecipeCard extends StatelessWidget {
-  final Recipe recipe;
+  final RecipeListResponseEntity recipe;
   final VoidCallback? onTap;
   final VoidCallback? onFavoriteToggle;
   const RecipeCard({
@@ -29,7 +29,7 @@ class RecipeCard extends StatelessWidget {
               AspectRatio(
                 aspectRatio: 16 / 9,
                 child: CachedNetworkImage(
-                  imageUrl: recipe.imageUrl,
+                  imageUrl: recipe.image,
                   fit: BoxFit.cover,
                   placeholder: (context, url) => Container(
                     color: Colors.grey[300],
@@ -51,7 +51,7 @@ class RecipeCard extends StatelessWidget {
                       children: [
                         Expanded(
                           child: Text(
-                            recipe.title,
+                            recipe.name,
                             style: Theme.of(context).textTheme.titleMedium,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
@@ -85,7 +85,7 @@ class RecipeCard extends StatelessWidget {
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          '${recipe.cookingTime} min',
+                          '${recipe.cookTimeMinutes} min',
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                         const SizedBox(width: 16),

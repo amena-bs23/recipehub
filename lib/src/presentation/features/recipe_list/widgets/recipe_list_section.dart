@@ -5,6 +5,7 @@ import 'package:shimmer/shimmer.dart';
 
 import '../../shared/providers/search_provider.dart';
 import '../../shared/widgets/recipe_card.dart';
+import '../riverpod/recipe_list_provider.dart';
 import '../riverpod/recipes_provider.dart';
 
 class RecipeListSection extends ConsumerStatefulWidget {
@@ -23,21 +24,6 @@ class _RecipeListSectionState extends ConsumerState<RecipeListSection> {
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
-
-    // Initial load
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final searchState = ref.read(searchProvider(SearchType.recipes));
-      _lastQuery = searchState.query.isEmpty ? null : searchState.query;
-      _lastDifficulty = searchState.difficulty;
-
-      ref
-          .read(recipesNotifierProvider.notifier)
-          .loadRecipes(
-            query: _lastQuery,
-            difficulty: _lastDifficulty,
-            refresh: false,
-          );
-    });
   }
 
   @override
@@ -82,39 +68,74 @@ class _RecipeListSectionState extends ConsumerState<RecipeListSection> {
   @override
   Widget build(BuildContext context) {
     // Watch search state to trigger reloads when it changes
-    final searchState = ref.watch(searchProvider(SearchType.recipes));
-    final recipesState = ref.watch(recipesNotifierProvider);
+    // final searchState = ref.watch(searchProvider(SearchType.recipes));
+    final recipesAsync = ref.watch(recipeListNotifierProvider);
 
-    // Trigger load when search state changes
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _loadRecipesIfNeeded();
-    });
+    return recipesAsync.when(
+      data: (recipeList) {
+        // return Text(recipeList.toString());
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                'All Recipes (${recipeList.length})',
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+              ),
+            ),
+            const SizedBox(height: 16),
+            GridView.builder(
+              controller: _scrollController,
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                childAspectRatio: 0.75,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
+              ),
+              itemCount: recipeList.length + (recipesAsync.isLoading ? 2 : 0),
+              itemBuilder: (context, index) {
+                if (index >= recipeList.length) {
+                  return _RecipeCardSkeleton();
+                }
 
-    final recipeList = recipesState.recipeList;
+                final recipe = recipeList[index];
+                return RecipeCard(
+                  recipe: recipe,
+                  onTap: () {
+                    context.go('/recipe/${recipe.id}');
+                  },
+                  onFavoriteToggle: () {
+                    ref
+                        .read(recipesNotifierProvider.notifier)
+                        .toggleFavorite(recipe);
+                  },
+                );
+              },
+            ),
+            if (recipesAsync.isRefreshing) const _Loader(),
+          ],
+        );
+      },
+      error: (error, stack) => Text(error.toString()),
+      loading: () => const _Loader(),
+    );
+  }
+}
 
-    if (recipesState.isLoading && recipeList.isEmpty) {
-      return const _LoadingSkeleton();
-    }
+/*
+class _RecipeList extends StatelessWidget {
+  const _RecipeList(this.recipeList);
 
-    if (recipesState.isHardError) {
-      return _ErrorWidget(
-        error: recipesState.error ?? 'An error occurred',
-        onRetry: () {
-          ref
-              .read(recipesNotifierProvider.notifier)
-              .loadRecipes(
-                query: searchState.query.isEmpty ? null : searchState.query,
-                difficulty: searchState.difficulty,
-                refresh: true,
-              );
-        },
-      );
-    }
+  final List<RecipeListResponseEntity> recipeList;
 
-    if (recipeList.isEmpty && !recipesState.isLoading) {
-      return const _EmptyWidget();
-    }
-
+  @override
+  Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -168,6 +189,7 @@ class _RecipeListSectionState extends ConsumerState<RecipeListSection> {
     );
   }
 }
+*/
 
 class _LoadingSkeleton extends StatelessWidget {
   const _LoadingSkeleton();
@@ -186,6 +208,18 @@ class _LoadingSkeleton extends StatelessWidget {
       ),
       itemCount: 6,
       itemBuilder: (context, index) => _RecipeCardSkeleton(),
+    );
+  }
+}
+
+class _Loader extends StatelessWidget {
+  const _Loader();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Padding(
+      padding: EdgeInsets.all(16.0),
+      child: Center(child: CircularProgressIndicator()),
     );
   }
 }
