@@ -38,33 +38,3 @@ final class GetRecipeByIdUseCase {
     return repository.getRecipeById(id);
   }
 }
-
-/*final class SearchRecipesUseCase {
-  SearchRecipesUseCase(this.repository);
-
-  final RecipeRepository repository;
-
-  Future<Result<List<Recipe>, Failure>> call(String query) async {
-    return repository.searchRecipes(query);
-  }
-}*/
-
-final class ToggleFavoriteUseCase {
-  ToggleFavoriteUseCase(this.repository);
-
-  final RecipeRepository repository;
-
-  Future<Result<void, Failure>> call(String recipeId) async {
-    return repository.toggleFavorite(recipeId);
-  }
-}
-
-final class GetFavoritesUseCase {
-  GetFavoritesUseCase(this.repository);
-
-  final RecipeRepository repository;
-
-  Future<Result<List<RecipeListResponseEntity>, Failure>> call() async {
-    return repository.getRecipes();
-  }
-}

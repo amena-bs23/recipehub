@@ -1,15 +1,14 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:recipehub/src/presentation/features/favorites/providers/favorites_provider.dart';
 
-import '../../../../core/base/result.dart';
 import '../../../../core/di/dependency_injection.dart';
 import '../../../../domain/entities/recipe_entity.dart';
 import '../../../../domain/use_cases/recipe_use_case.dart';
 import 'recipes_state.dart';
 
 class RecipesNotifier extends Notifier<RecipesState> {
-  GetRecipesUseCase get _getRecipesUseCase => ref.read(getRecipesUseCaseProvider);
-  ToggleFavoriteUseCase get _toggleFavoriteUseCase => ref.read(toggleFavoriteUseCaseProvider);
+  GetRecipesUseCase get _getRecipesUseCase =>
+      ref.read(getRecipesUseCaseProvider);
+  // FavoriteUseCase get _favoriteUseCase => ref.read(favoriteUseCaseProvider);
 
   static const int _pageSize = 30;
 
@@ -25,7 +24,7 @@ class RecipesNotifier extends Notifier<RecipesState> {
   }) async {
     // Get current recipes before loading
     final currentRecipes = state.recipeList;
-    
+
     // Set loading state - preserve previous data if available (for pagination)
     if (refresh) {
       state = state.copyWith(
@@ -33,16 +32,16 @@ class RecipesNotifier extends Notifier<RecipesState> {
         currentPage: 0,
         recipes: currentRecipes.isEmpty
             ? const AsyncValue.loading()
-            : AsyncValue.data(currentRecipes), // Keep showing current data while refreshing
+            : AsyncValue.data(
+                currentRecipes,
+              ), // Keep showing current data while refreshing
       );
     } else {
       // For pagination, keep showing current data
       if (currentRecipes.isNotEmpty) {
         // Don't change state, just keep current data visible
       } else {
-        state = state.copyWith(
-          recipes: const AsyncValue.loading(),
-        );
+        state = state.copyWith(recipes: const AsyncValue.loading());
       }
     }
 
@@ -54,7 +53,7 @@ class RecipesNotifier extends Notifier<RecipesState> {
         difficulty: difficulty,
       );
 
-      state = switch (result) {
+      /*state = switch (result) {
         Success(:final data) => state.copyWith(
             recipes: AsyncValue.data(
               refresh ? data : [...currentRecipes, ...data],
@@ -77,7 +76,7 @@ class RecipesNotifier extends Notifier<RecipesState> {
             ),
             isRefreshing: false,
           ),
-      };
+      };*/
     } catch (e, stackTrace) {
       state = state.copyWith(
         recipes: AsyncValue<List<Recipe>>.error(e, stackTrace),
@@ -86,7 +85,7 @@ class RecipesNotifier extends Notifier<RecipesState> {
     }
   }
 
-  Future<void> toggleFavorite(Recipe recipe) async {
+  /*Future<void> toggleFavorite(RecipeListResponseEntity recipe) async {
     final result = await _toggleFavoriteUseCase.call(recipe.id);
 
     switch (result) {
@@ -100,18 +99,13 @@ class RecipesNotifier extends Notifier<RecipesState> {
           return r;
         }).toList();
 
-        state = state.copyWith(
-          recipes: AsyncValue.data(updatedRecipes),
-        );
-        
+        // state = state.copyWith(recipes: AsyncValue.data(updatedRecipes));
+
         // Invalidate favorites provider to sync state
         ref.invalidate(favoritesNotifierProvider);
       case Error(:final error):
         state = state.copyWith(
-          recipes: AsyncValue<List<Recipe>>.error(
-            error,
-            StackTrace.current,
-          ),
+          recipes: AsyncValue<List<Recipe>>.error(error, StackTrace.current),
         );
       default:
         state = state.copyWith(
@@ -121,10 +115,9 @@ class RecipesNotifier extends Notifier<RecipesState> {
           ),
         );
     }
-  }
+  }*/
 }
 
-final recipesNotifierProvider =
-    NotifierProvider<RecipesNotifier, RecipesState>(
+final recipesNotifierProvider = NotifierProvider<RecipesNotifier, RecipesState>(
   RecipesNotifier.new,
 );

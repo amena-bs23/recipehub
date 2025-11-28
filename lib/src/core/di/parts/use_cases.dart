@@ -46,3 +46,8 @@ ToggleFavoriteUseCase toggleFavoriteUseCase(Ref ref) {
 GetFavoritesUseCase getFavoritesUseCase(Ref ref) {
   return GetFavoritesUseCase(ref.read(recipeRepositoryProvider));
 }
+
+@riverpod
+GetFavoriteIdsUseCase getFavoriteIdsUseCase(Ref ref) {
+  return GetFavoriteIdsUseCase(ref.read(recipeRepositoryProvider));
+}

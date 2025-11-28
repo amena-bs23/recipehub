@@ -57,7 +57,7 @@ class FavoritesNotifier extends StateNotifier<FavoritesState> {
     // Load all recipes and filter favorites
     final result = await _getRecipesUseCase.call(limit: 100);
 
-    state = switch (result) {
+    /*state = switch (result) {
       Success(:final data) => () {
         final favorites = data.where((r) => r.isFavorite).toList();
         return state.copyWith(
@@ -77,7 +77,7 @@ class FavoritesNotifier extends StateNotifier<FavoritesState> {
         isRefreshing: false,
         error: 'Something went wrong',
       ),
-    };
+    };*/
   }
 
   Future<void> toggleFavorite(Recipe recipe) async {
@@ -88,17 +88,22 @@ class FavoritesNotifier extends StateNotifier<FavoritesState> {
         final newState = recipe.isFavorite
             ? // Remove from favorites
               state.copyWith(
-                favorites: state.favorites.where((r) => r.id != recipe.id).toList(),
+                favorites: state.favorites
+                    .where((r) => r.id != recipe.id)
+                    .toList(),
               )
             : // Add to favorites
               state.copyWith(
-                favorites: [...state.favorites, recipe.copyWith(isFavorite: true)],
+                favorites: [
+                  ...state.favorites,
+                  recipe.copyWith(isFavorite: true),
+                ],
               );
-        
+
         // Invalidate recipes provider to sync state
         // This will cause it to reload with fresh data when accessed
         _ref.invalidate(recipesNotifierProvider);
-        
+
         return newState;
       }(),
       Error(:final error) => state.copyWith(error: error.message),

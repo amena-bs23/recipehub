@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import '../../core/base/failure.dart';
 import '../../core/base/repository.dart';
 import '../../core/base/result.dart';
@@ -16,4 +18,6 @@ abstract base class RecipeRepository extends Repository {
   // Future<Result<List<Recipe>, Failure>> searchRecipes(String query);
 
   Future<Result<void, Failure>> toggleFavorite(String recipeId);
+
+  FutureOr<Set<String>> getFavoriteIds();
 }

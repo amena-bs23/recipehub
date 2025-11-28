@@ -1,20 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
-
-import '../../shared/providers/search_provider.dart';
-import '../../shared/widgets/app_drawer.dart';
-import '../../shared/widgets/recipe_card.dart';
-import '../../shared/widgets/search_bar.dart';
-import '../providers/favorites_provider.dart';
 
 class FavoritesPage extends ConsumerWidget {
   const FavoritesPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final searchState = ref.watch(searchProvider(SearchType.favorites));
+    return const Placeholder();
+    /*final searchState = ref.watch(searchProvider(SearchType.favorites));
     final favoritesState = ref.watch(favoritesNotifierProvider);
 
     final filteredFavorites = ref
@@ -112,9 +106,10 @@ class FavoritesPage extends ConsumerWidget {
           ),
         ),
       ),
-    );
+    );*/
   }
 }
+
 class _LoadingGrid extends StatelessWidget {
   const _LoadingGrid();
 
@@ -231,4 +226,3 @@ class _EmptyWidget extends StatelessWidget {
     );
   }
 }
-
