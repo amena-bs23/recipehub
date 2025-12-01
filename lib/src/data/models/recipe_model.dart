@@ -74,14 +74,13 @@ class RecipeModel {
     );
   }
 
-  RecipeListResponseEntity toListEntity({bool isFavorite = false}) {
+  RecipeListResponseEntity toListEntity() {
     return RecipeListResponseEntity(
       id: id.toString(),
       name: name,
       image: image,
       cookTimeMinutes: cookTimeMinutes,
       difficulty: difficulty,
-      isFavorite: isFavorite,
     );
   }
 

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import '../../core/base/failure.dart';
 import '../../core/base/result.dart';
 import '../../domain/entities/recipe_entity.dart';
@@ -22,6 +24,25 @@ final class RecipeRepositoryImpl extends RecipeRepository {
   }
 
   @override
+  FutureOr<Set<String>> getFavoriteIds() {
+    try {
+      return local.get<Set<String>>(CacheKey.favoriteRecipeIds) ?? <String>{};
+    } catch (e) {
+      return <String>{};
+    }
+  }
+
+  @override
+  Future<bool> saveFavoriteIds(Set<String> favoriteIds) async {
+    try {
+      await local.save(CacheKey.favoriteRecipeIds, favoriteIds);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  @override
   Future<Result<List<RecipeListResponseEntity>, Failure>> getRecipes({
     int skip = 0,
     int limit = 30,
@@ -37,8 +58,13 @@ final class RecipeRepositoryImpl extends RecipeRepository {
       );
 
       // Parse response similar to AuthenticationRepositoryImpl
-      final responseData = response.data;
-      final recipeListModel =
+      final responseData = response.data['recipes'] as List<dynamic>? ?? [];
+      final recipeModel = responseData
+          .map((json) => RecipeModel.fromJson(json as Map<String, dynamic>))
+          .toList();
+      return recipeModel.map((item) => item.toListEntity()).toList();
+
+      /*final recipeListModel =
           (responseData['recipes'] as List<dynamic>?)
               ?.map(
                 (json) => RecipeModel.fromJson(json as Map<String, dynamic>),
@@ -64,12 +90,14 @@ final class RecipeRepositoryImpl extends RecipeRepository {
         }).toList();
       }
 
-      return recipes;
+      return recipes;*/
     });
   }
 
   @override
-  Future<Result<Recipe, Failure>> getRecipeById(String id) async {
+  Future<Result<RecipeDetailsResponseEntity, Failure>> getRecipeById(
+    String id,
+  ) async {
     return asyncGuard(() async {
       // Use RestClient
       final response = await remote.getRecipeById(id);
@@ -80,7 +108,7 @@ final class RecipeRepositoryImpl extends RecipeRepository {
       // Save to recently viewed
       await _addToRecentlyViewed(id);
 
-      return model.toEntity(isFavorite: favoriteIds.contains(id));
+      return model.toDetailsEntity();
     });
   }
 

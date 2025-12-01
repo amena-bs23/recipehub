@@ -5,20 +5,21 @@ import '../../../../core/di/dependency_injection.dart';
 import '../../../../domain/entities/recipe_entity.dart';
 import '../../../../domain/use_cases/recipe_use_case.dart';
 
-part 'recipe_list_provider.g.dart';
+part 'recipe_details_provider.g.dart';
 
 @riverpod
-class RecipeListNotifier extends _$RecipeListNotifier {
-  late GetRecipesUseCase _getRecipesUseCase;
+class RecipeDetailsNotifier extends _$RecipeDetailsNotifier {
+  late GetRecipeDetailsUseCase _getRecipeDetailsUseCase;
 
   @override
-  Future<List<RecipeListResponseEntity>> build() async {
-    _getRecipesUseCase = ref.read(getRecipesUseCaseProvider);
-    return await loadRecipes();
+  Future<RecipeDetailsResponseEntity> build() async {
+    _getRecipeDetailsUseCase = ref.read(getRecipeDetailsUseCaseProvider);
+    return throw UnimplementedError();
+    // return await _loadRecipes();
   }
 
-  Future<List<RecipeListResponseEntity>> loadRecipes() async {
-    final result = await _getRecipesUseCase.call();
+  Future<RecipeDetailsResponseEntity> _getRecipeDetails() async {
+    final result = await _getRecipeDetailsUseCase.call('1');
 
     return switch (result) {
       Success(:final data) => data,

@@ -13,6 +13,7 @@ import '../../data/services/network/rest_client.dart';
 import '../../domain/repositories/authentication_repository.dart';
 import '../../domain/repositories/recipe_repository.dart'; // Add this import
 import '../../domain/use_cases/authentication_use_case.dart';
+import '../../domain/use_cases/favorite_use_case.dart'; // Add this if exists
 import '../../domain/use_cases/recipe_use_case.dart'; // Add this if exists
 
 part 'dependency_injection.g.dart';
