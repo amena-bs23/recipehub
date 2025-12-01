@@ -14,10 +14,10 @@ class RecipeListNotifier extends _$RecipeListNotifier {
   @override
   Future<List<RecipeListResponseEntity>> build() async {
     _getRecipesUseCase = ref.read(getRecipesUseCaseProvider);
-    return await _loadRecipes();
+    return await loadRecipes();
   }
 
-  Future<List<RecipeListResponseEntity>> _loadRecipes() async {
+  Future<List<RecipeListResponseEntity>> loadRecipes() async {
     final result = await _getRecipesUseCase.call();
 
     return switch (result) {

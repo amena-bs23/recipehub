@@ -34,3 +34,13 @@ final class GetFavoriteIdsUseCase {
     return repository.getFavoriteIds();
   }
 }
+
+final class SaveFavoriteIdsUseCase {
+  SaveFavoriteIdsUseCase(this.repository);
+
+  final RecipeRepository repository;
+
+  Future<void> call(favoriteIds) async {
+    return repository.saveFavoriteIds(favoriteIds);
+  }
+}

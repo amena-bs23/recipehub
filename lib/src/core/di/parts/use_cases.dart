@@ -51,3 +51,13 @@ GetFavoritesUseCase getFavoritesUseCase(Ref ref) {
 GetFavoriteIdsUseCase getFavoriteIdsUseCase(Ref ref) {
   return GetFavoriteIdsUseCase(ref.read(recipeRepositoryProvider));
 }
+
+@riverpod
+SaveFavoriteIdsUseCase saveFavoriteIdsUseCase(Ref ref) {
+  return SaveFavoriteIdsUseCase(ref.read(recipeRepositoryProvider));
+}
+
+@riverpod
+GetRecipeDetailsUseCase getRecipeDetailsUseCase(Ref ref) {
+  return GetRecipeDetailsUseCase(ref.read(recipeRepositoryProvider));
+}

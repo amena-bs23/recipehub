@@ -1,3 +1,4 @@
+/*
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/di/dependency_injection.dart';
@@ -53,7 +54,8 @@ class RecipesNotifier extends Notifier<RecipesState> {
         difficulty: difficulty,
       );
 
-      /*state = switch (result) {
+      */
+/*state = switch (result) {
         Success(:final data) => state.copyWith(
             recipes: AsyncValue.data(
               refresh ? data : [...currentRecipes, ...data],
@@ -76,7 +78,8 @@ class RecipesNotifier extends Notifier<RecipesState> {
             ),
             isRefreshing: false,
           ),
-      };*/
+      };*/ /*
+
     } catch (e, stackTrace) {
       state = state.copyWith(
         recipes: AsyncValue<List<Recipe>>.error(e, stackTrace),
@@ -85,7 +88,8 @@ class RecipesNotifier extends Notifier<RecipesState> {
     }
   }
 
-  /*Future<void> toggleFavorite(RecipeListResponseEntity recipe) async {
+  */
+/*Future<void> toggleFavorite(RecipeListResponseEntity recipe) async {
     final result = await _toggleFavoriteUseCase.call(recipe.id);
 
     switch (result) {
@@ -115,9 +119,11 @@ class RecipesNotifier extends Notifier<RecipesState> {
           ),
         );
     }
-  }*/
+  }*/ /*
+
 }
 
 final recipesNotifierProvider = NotifierProvider<RecipesNotifier, RecipesState>(
   RecipesNotifier.new,
 );
+*/

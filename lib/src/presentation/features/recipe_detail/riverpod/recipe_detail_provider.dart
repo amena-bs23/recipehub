@@ -1,10 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:recipehub/src/presentation/features/favorites/providers/favorites_provider.dart';
-import 'package:recipehub/src/presentation/features/recipe_list/riverpod/recipes_provider.dart';
 
 import '../../../../core/base/result.dart';
 import '../../../../core/di/dependency_injection.dart';
 import '../../../../domain/entities/recipe_entity.dart';
+import '../../../../domain/use_cases/favorite_use_case.dart';
 import '../../../../domain/use_cases/recipe_use_case.dart';
 
 class RecipeDetailState {
@@ -61,9 +61,9 @@ class RecipeDetailNotifier extends StateNotifier<RecipeDetailState> {
     state = switch (result) {
       Success() => () {
         // Invalidate recipes and favorites providers to sync state
-        _ref.invalidate(recipesNotifierProvider);
+        /*_ref.invalidate(recipesNotifierProvider);*/
         _ref.invalidate(favoritesNotifierProvider);
-        
+
         return state.copyWith(
           recipe: state.recipe!.copyWith(isFavorite: !state.recipe!.isFavorite),
         );
@@ -82,5 +82,9 @@ final recipeDetailNotifierProvider =
     StateNotifierProvider<RecipeDetailNotifier, RecipeDetailState>((ref) {
       final getRecipeByIdUseCase = ref.read(getRecipeByIdUseCaseProvider);
       final toggleFavoriteUseCase = ref.read(toggleFavoriteUseCaseProvider);
-      return RecipeDetailNotifier(getRecipeByIdUseCase, toggleFavoriteUseCase, ref);
+      return RecipeDetailNotifier(
+        getRecipeByIdUseCase,
+        toggleFavoriteUseCase,
+        ref,
+      );
     });

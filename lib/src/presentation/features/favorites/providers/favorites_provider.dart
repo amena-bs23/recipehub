@@ -1,9 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:recipehub/src/presentation/features/recipe_list/riverpod/recipes_provider.dart';
 
 import '../../../../core/base/result.dart';
 import '../../../../core/di/dependency_injection.dart';
 import '../../../../domain/entities/recipe_entity.dart';
+import '../../../../domain/use_cases/favorite_use_case.dart';
 import '../../../../domain/use_cases/recipe_use_case.dart';
 
 class FavoritesState {
@@ -102,7 +102,7 @@ class FavoritesNotifier extends StateNotifier<FavoritesState> {
 
         // Invalidate recipes provider to sync state
         // This will cause it to reload with fresh data when accessed
-        _ref.invalidate(recipesNotifierProvider);
+        /*_ref.invalidate(recipesNotifierProvider);*/
 
         return newState;
       }(),

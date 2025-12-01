@@ -33,6 +33,16 @@ final class RecipeRepositoryImpl extends RecipeRepository {
   }
 
   @override
+  Future<bool> saveFavoriteIds(Set<String> favoriteIds) async {
+    try {
+      await local.save(CacheKey.favoriteRecipeIds, favoriteIds);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  @override
   Future<Result<List<RecipeListResponseEntity>, Failure>> getRecipes({
     int skip = 0,
     int limit = 30,
@@ -85,7 +95,9 @@ final class RecipeRepositoryImpl extends RecipeRepository {
   }
 
   @override
-  Future<Result<Recipe, Failure>> getRecipeById(String id) async {
+  Future<Result<RecipeDetailsResponseEntity, Failure>> getRecipeById(
+    String id,
+  ) async {
     return asyncGuard(() async {
       // Use RestClient
       final response = await remote.getRecipeById(id);
@@ -96,7 +108,7 @@ final class RecipeRepositoryImpl extends RecipeRepository {
       // Save to recently viewed
       await _addToRecentlyViewed(id);
 
-      return model.toEntity(isFavorite: favoriteIds.contains(id));
+      return model.toDetailsEntity();
     });
   }
 

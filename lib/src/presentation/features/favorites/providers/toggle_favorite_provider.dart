@@ -12,9 +12,11 @@ final toggleFavoriteNotifierProvider =
 
 class ToggleFavoriteNotifier extends AsyncNotifier<Set<String>> {
   late GetFavoriteIdsUseCase _getFavoriteIdsUseCase;
+  late SaveFavoriteIdsUseCase _saveFavoriteIdsUseCase;
   @override
   FutureOr<Set<String>> build() async {
     _getFavoriteIdsUseCase = ref.read(getFavoriteIdsUseCaseProvider);
+    _saveFavoriteIdsUseCase = ref.read(saveFavoriteIdsUseCaseProvider);
     return await _getFavoriteIdsUseCase.call();
   }
 
@@ -23,17 +25,14 @@ class ToggleFavoriteNotifier extends AsyncNotifier<Set<String>> {
   }
 
   Future<void> addFavorite(String id) async {
-    // state = const AsyncLoading();
-
-    final favoriteIds = state.valueOrNull ?? <String>{};
+    final Set<String> favoriteIds = state.valueOrNull ?? <String>{};
     favoriteIds.add(id);
     state = AsyncData(favoriteIds);
     await _persist();
   }
 
   Future<void> removeFavorite(String id) async {
-    final current = state.valueOrNull;
-    if (current == null) return;
+    final Set<String> current = state.valueOrNull ?? <String>{};
     // Copy
     final updated = {...current};
     // Remove
@@ -45,6 +44,8 @@ class ToggleFavoriteNotifier extends AsyncNotifier<Set<String>> {
 
   Future<void> _persist() async {
     // I will an use case to store the data through repository
+    final favoriteIds = state.valueOrNull ?? <String>{};
+    await _saveFavoriteIdsUseCase.call(favoriteIds);
   }
 
   /// Toggle helper: returns newValue

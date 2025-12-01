@@ -35,6 +35,17 @@ final class GetRecipeByIdUseCase {
   final RecipeRepository repository;
 
   Future<Result<Recipe, Failure>> call(String id) async {
+    return throw UnimplementedError();
+    // return repository.getRecipeById(id);
+  }
+}
+
+final class GetRecipeDetailsUseCase {
+  GetRecipeDetailsUseCase(this.repository);
+
+  final RecipeRepository repository;
+
+  Future<Result<RecipeDetailsResponseEntity, Failure>> call(String id) async {
     return repository.getRecipeById(id);
   }
 }
